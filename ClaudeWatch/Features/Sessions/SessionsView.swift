@@ -22,7 +22,7 @@ struct SessionsView: View {
 
     var body: some View {
         @Bindable var appState = appState
-        HSplitView {
+        HStack(spacing: 0) {
             VStack(spacing: 0) {
                 Picker("Filter", selection: $appState.sessionFilter) {
                     ForEach(SessionFilter.allCases) { filter in
@@ -46,7 +46,9 @@ struct SessionsView: View {
                     }
                 }
             }
-            .frame(minWidth: 260, idealWidth: 300, maxWidth: 360)
+            .frame(width: 300)
+
+            Divider()
 
             Group {
                 if let id = appState.selectedSessionID, let session = sessions.first(where: { $0.id == id }) {
@@ -56,7 +58,7 @@ struct SessionsView: View {
                     ContentUnavailableView("No Session Selected", systemImage: "sidebar.left", description: Text("Select a session to see its details and event history."))
                 }
             }
-            .frame(minWidth: 420, idealWidth: 560, maxWidth: .infinity, maxHeight: .infinity)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .searchable(text: $searchText, placement: .toolbar, prompt: "Search sessions")
         .navigationTitle("Sessions")

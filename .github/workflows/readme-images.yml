@@ -61,7 +61,9 @@ jobs:
       - name: Capture screenshots
         run: |
           mkdir -p "$IMAGES"
-          # Native notifications stay on (as for users); the permission prompt is not part of the captured window.
+          # The CI Mac cannot grant notification permission; seed with native notifications off so
+          # event history shows no delivery errors, then switch them on for the settings screenshot.
+          defaults write com.claudewatch.ClaudeWatch nativeNotificationsEnabled -bool false
           defaults write com.claudewatch.ClaudeWatch showMenuBarItem -bool true
           open "$APP"
           for _ in $(seq 60); do
@@ -80,6 +82,7 @@ jobs:
           }
           shot section/overview overview
           shot session/6f1c2b8e-4d3a-4e5f-9a7b-1c2d3e4f5a6b session-detail
+          defaults write com.claudewatch.ClaudeWatch nativeNotificationsEnabled -bool true
           shot section/notifications notifications
           shot section/accounts accounts
 
