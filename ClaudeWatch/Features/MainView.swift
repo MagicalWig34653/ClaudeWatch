@@ -23,7 +23,7 @@ struct MainView: View {
             case .settings: GeneralSettingsView()
             }
         }
-        .frame(minWidth: 760, minHeight: 480)
+        .frame(minWidth: 900, minHeight: 520)
         .onAppear {
             let openWindow = openWindow
             appState.openMainWindowAction = { openWindow(id: AppState.mainWindowID) }

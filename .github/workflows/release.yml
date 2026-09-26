@@ -6,13 +6,17 @@ name: Release DMG
 #   - tag set:                      attach the DMG to that existing release
 #   - tag set + create_release:     build from the selected branch, then create and publish
 #                                   the release (new tag on that commit) with the DMG attached
-# Pull requests that change this workflow build the DMG as an artifact only.
+# Pull requests that change packaging or artwork build the DMG as an artifact only.
 on:
   release:
     types: [published]
   pull_request:
     paths:
       - .github/workflows/release.yml
+      - .github/actions/select-xcode/**
+      - Scripts/make-dmg.sh
+      - Artwork/**
+      - ClaudeWatch/AppIcon.icon/**
   workflow_dispatch:
     inputs:
       tag:
@@ -35,7 +39,7 @@ concurrency:
 jobs:
   dmg:
     name: Build DMG
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 30
     env:
       TAG: ${{ github.event.release.tag_name || inputs.tag }}
@@ -45,6 +49,9 @@ jobs:
         with:
           # A release being created does not have a tag yet: build the dispatched commit.
           ref: ${{ github.event.release.tag_name || (inputs.create_release && github.sha) || inputs.tag || github.sha }}
+
+      - name: Select Xcode 26
+        uses: ./.github/actions/select-xcode
 
       - name: Determine version
         id: version
@@ -93,17 +100,15 @@ jobs:
           codesign --verify --deep --strict --verbose=2 "$APP"
           lipo -archs "$APP/Contents/MacOS/ClaudeWatch"
           /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP/Contents/Info.plist"
+          ICON="$(/usr/libexec/PlistBuddy -c "Print :CFBundleIconFile" "$APP/Contents/Info.plist")"
+          test -f "$APP/Contents/Resources/${ICON%.icns}.icns"
 
       - name: Create DMG
         id: dmg
         run: |
           APP="build/DerivedData/Build/Products/Release/ClaudeWatch.app"
           DMG="ClaudeWatch-${{ steps.version.outputs.version }}.dmg"
-          STAGING="$(mktemp -d)"
-          ditto "$APP" "$STAGING/ClaudeWatch.app"
-          ln -s /Applications "$STAGING/Applications"
-          hdiutil create -volname "ClaudeWatch" -srcfolder "$STAGING" -fs HFS+ -format UDZO -ov "build/$DMG"
-          hdiutil verify "build/$DMG"
+          Scripts/make-dmg.sh "$APP" "build/$DMG"
           (cd build && shasum -a 256 "$DMG" > "$DMG.sha256")
           cat "build/$DMG.sha256"
           {

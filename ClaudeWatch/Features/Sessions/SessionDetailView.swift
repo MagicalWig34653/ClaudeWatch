@@ -41,13 +41,23 @@ struct SessionDetailView: View {
                 LabeledContent("Account") { Text(verbatim: session.displayAccount) }
                 LabeledContent("Source") { Text(session.source.displayName) }
                 LabeledContent("Working Directory") {
-                    Text(verbatim: session.workingDirectory ?? "—").textSelection(.enabled).lineLimit(2)
+                    Text(verbatim: session.workingDirectory ?? "—")
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                        .textSelection(.enabled)
+                        .help(session.workingDirectory ?? "")
                 }
                 LabeledContent("Session ID") {
-                    Text(verbatim: session.id).font(.system(.body, design: .monospaced)).textSelection(.enabled)
+                    Text(verbatim: session.id)
+                        .font(.system(.callout, design: .monospaced))
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                        .textSelection(.enabled)
                 }
                 if let remoteID = session.remoteSessionID {
-                    LabeledContent("Remote Session ID") { Text(verbatim: remoteID).textSelection(.enabled) }
+                    LabeledContent("Remote Session ID") {
+                        Text(verbatim: remoteID).lineLimit(1).truncationMode(.middle).textSelection(.enabled)
+                    }
                 }
                 LabeledContent("Started") { Text(session.startedAt, format: .dateTime) }
                 LabeledContent("Last Update") { Text(session.updatedAt, format: .dateTime) }

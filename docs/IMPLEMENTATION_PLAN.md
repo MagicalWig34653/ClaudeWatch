@@ -76,3 +76,7 @@ material deviation together with the reason for it.
     allowing deletion of "active" sessions, the UI offers an explicit Mark as Finished
     action that goes through `SessionStateMachine`. The session can then be deleted
     normally.
+11. **Xcode 26 and macOS 26 CI runners.** The app icon is an Icon Composer document,
+    which only Xcode 26 compiles. CI runs on `macos-26`: compiling the icon with Xcode
+    26.3 on macOS 15 failed, while Xcode 26.6 on macOS 26 renders it. The deployment
+    target stays macOS 14; Xcode generates the fallback `.icns`.

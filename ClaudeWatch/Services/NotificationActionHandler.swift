@@ -42,16 +42,23 @@ final class NotificationActionHandler {
         }
     }
 
-    /// Handles `claudewatch://session/<id>` and `claudewatch://open`.
+    /// Handles `claudewatch://session/<id>`, `claudewatch://section/<name>` and `claudewatch://open`.
     func handle(url: URL) {
-        guard url.scheme?.lowercased() == Self.urlScheme else { return }
-        if url.host == "session" {
-            let id = url.pathComponents.dropFirst().first
-            if let appState, let id, HookPayloadDecoder.isValidSessionID(id) {
+        guard url.scheme?.lowercased() == Self.urlScheme, let appState else { return }
+        let argument = url.pathComponents.dropFirst().first
+        switch url.host {
+        case "session":
+            if let id = argument, HookPayloadDecoder.isValidSessionID(id) {
                 appState.selectedSection = .sessions
                 appState.selectedSessionID = id
                 appState.sessionFilter = .all
             }
+        case "section":
+            if let name = argument, let section = SidebarSection(rawValue: name) {
+                appState.selectedSection = section
+            }
+        default:
+            break
         }
     }
 
