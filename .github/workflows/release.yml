@@ -1,8 +1,11 @@
 name: Release DMG
 
 # Builds ClaudeWatch.app (Release, universal) into a DMG and attaches it to the release.
-# Runs automatically when a release is published; can also be started manually to
-# build a DMG as a workflow artifact (and optionally attach it to an existing release).
+# Runs automatically when a release is published. It can also be started manually:
+#   - tag empty:                    build a DMG as a workflow artifact only
+#   - tag set:                      attach the DMG to that existing release
+#   - tag set + create_release:     build from the selected branch, then create and publish
+#                                   the release (new tag on that commit) with the DMG attached
 # Pull requests that change this workflow build the DMG as an artifact only.
 on:
   release:
@@ -16,6 +19,11 @@ on:
         description: "Existing release tag to attach the DMG to (leave empty to only build an artifact)"
         required: false
         default: ""
+      create_release:
+        description: "Create and publish the release for this tag from the selected branch (build must succeed first)"
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: write
@@ -31,10 +39,12 @@ jobs:
     timeout-minutes: 30
     env:
       TAG: ${{ github.event.release.tag_name || inputs.tag }}
+      CREATE_RELEASE: ${{ github.event_name == 'workflow_dispatch' && inputs.create_release }}
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.release.tag_name || inputs.tag || github.sha }}
+          # A release being created does not have a tag yet: build the dispatched commit.
+          ref: ${{ github.event.release.tag_name || (inputs.create_release && github.sha) || inputs.tag || github.sha }}
 
       - name: Determine version
         id: version
@@ -109,6 +119,36 @@ jobs:
             ${{ steps.dmg.outputs.path }}
             ${{ steps.dmg.outputs.path }}.sha256
           if-no-files-found: error
+
+      - name: Create release
+        if: env.TAG != '' && env.CREATE_RELEASE == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release $TAG already exists; not recreating it."
+            exit 1
+          fi
+          PRERELEASE=""
+          case "$VERSION" in *-*) PRERELEASE="--prerelease" ;; esac
+          cat > build/release-notes.md <<'NOTES'
+          ## Install
+
+          Download the DMG below, open it and drag **ClaudeWatch** to Applications.
+          This build is ad-hoc signed and not notarized, so macOS blocks the first launch:
+          open it once via **System Settings › Privacy & Security › Open Anyway**, or run
+          `xattr -dr com.apple.quarantine /Applications/ClaudeWatch.app`.
+
+          Then connect Claude Code hooks as described in the
+          [README](https://github.com/MagicalWig34653/ClaudeWatch#connect-claude-code).
+          Requires macOS 14 or newer. Universal (Apple silicon and Intel).
+          NOTES
+          # shellcheck disable=SC2086
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" \
+            --target "$(git rev-parse HEAD)" \
+            --title "ClaudeWatch $VERSION" \
+            --notes-file build/release-notes.md --generate-notes $PRERELEASE
 
       - name: Attach DMG to release
         if: env.TAG != ''
