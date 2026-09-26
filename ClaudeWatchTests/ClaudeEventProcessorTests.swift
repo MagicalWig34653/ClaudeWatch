@@ -55,6 +55,10 @@ final class ClaudeEventProcessorTests: XCTestCase {
         try XCTUnwrap(context.fetch(FetchDescriptor<ClaudeSession>(predicate: #Predicate { $0.id == id })).first)
     }
 
+    private func sessionExists(_ id: String) throws -> Bool {
+        try context.fetchCount(FetchDescriptor<ClaudeSession>(predicate: #Predicate { $0.id == id })) > 0
+    }
+
     private func records() throws -> [ClaudeEventRecord] {
         try context.fetch(FetchDescriptor<ClaudeEventRecord>(sortBy: [SortDescriptor(\.receivedAt)]))
     }
@@ -220,11 +224,11 @@ final class ClaudeEventProcessorTests: XCTestCase {
         clock.addTimeInterval(40 * 86_400)
         let result = RetentionService.cleanUp(context: context, retentionDays: 30, now: clock)
         XCTAssertEqual(result.sessions, 1)
-        XCTAssertNoThrow(try session("s1"))
-        XCTAssertThrowsError(try session("old"))
+        XCTAssertTrue(try sessionExists("s1"))
+        XCTAssertFalse(try sessionExists("old"))
 
         XCTAssertFalse(RetentionService.delete(try session("s1"), context: context))
-        XCTAssertNoThrow(try session("s1"))
+        XCTAssertTrue(try sessionExists("s1"))
     }
 
     func testMarkFinished() async throws {
