@@ -54,9 +54,13 @@ Signing & Capabilities. Hardened Runtime is already on for Release builds.
 **Releases:** publishing a GitHub release (tag `vX.Y.Z`) runs
 `.github/workflows/release.yml`. It tests the app, builds a universal Release app with
 `MARKETING_VERSION` taken from the tag, packages `ClaudeWatch-X.Y.Z.dmg` with `hdiutil`,
-and attaches the DMG and its SHA-256 checksum to the release. You can also run the workflow
-manually. With a tag it re-attaches the DMG to that release; without one it only
-produces a workflow artifact.
+and attaches the DMG and its SHA-256 checksum to the release. You can also run the workflow manually (Actions › Release DMG › Run workflow):
+
+- with no tag, it only builds the DMG as a workflow artifact;
+- with the tag of an existing release, it rebuilds the DMG and re-attaches it;
+- with a new tag and **create_release** checked, it builds the selected branch first and
+  only then creates and publishes the release on that commit, with notes and the DMG
+  attached. Releases created this way don't trigger a second run.
 
 Tests:
 
