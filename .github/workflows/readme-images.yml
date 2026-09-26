@@ -1,0 +1,129 @@
+name: README images
+
+# Builds the app, fills it with demo sessions through the real hook listener, and takes
+# screenshots of the main window, notification settings and the DMG window. The images
+# are uploaded as an artifact and pushed to the `readme-images` branch, from where they
+# can be copied into docs/images/.
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/readme-images.yml
+      - Scripts/seed-demo-sessions.py
+      - Scripts/window-id.swift
+
+permissions:
+  contents: write
+
+concurrency:
+  group: readme-images
+  cancel-in-progress: true
+
+jobs:
+  images:
+    name: Capture README images
+    runs-on: macos-15
+    timeout-minutes: 30
+    env:
+      APP: build/DerivedData/Build/Products/Release/ClaudeWatch.app
+      IMAGES: build/images
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode 26
+        uses: ./.github/actions/select-xcode
+
+      - name: Build app
+        run: |
+          mkdir -p build
+          xcodebuild build -project ClaudeWatch.xcodeproj -scheme ClaudeWatch -configuration Release \
+            -destination 'platform=macOS' -derivedDataPath build/DerivedData CODE_SIGN_IDENTITY=- \
+            > build/build.log 2>&1 || { tail -60 build/build.log; exit 1; }
+          swiftc -O Scripts/window-id.swift -o "$RUNNER_TEMP/window-id"
+
+      - name: Set up cswap with two demo accounts
+        # Best effort: without cswap the screenshots show "Unknown Account".
+        continue-on-error: true
+        run: |
+          python3 -m venv "$RUNNER_TEMP/cswap"
+          "$RUNNER_TEMP/cswap/bin/pip" install -q claude-swap==0.26.0
+          mkdir -p "$HOME/.local/bin"
+          ln -sf "$RUNNER_TEMP/cswap/bin/cswap" "$HOME/.local/bin/cswap"
+          CSWAP="$HOME/.local/bin/cswap"
+          # Placeholder API keys; nothing is ever sent with them.
+          echo "sk-ant-api03-demo-work-0000000000000000000000000000000000000000" | "$CSWAP" add-token - --email work@example.com
+          echo "sk-ant-api03-demo-personal-00000000000000000000000000000000000" | "$CSWAP" add-token - --email me@example.org
+          "$CSWAP" alias 1 work
+          "$CSWAP" alias 2 personal
+          "$CSWAP" switch 1
+          "$CSWAP" list --json
+
+      - name: Capture screenshots
+        run: |
+          mkdir -p "$IMAGES"
+          defaults write com.claudewatch.ClaudeWatch nativeNotificationsEnabled -bool false
+          defaults write com.claudewatch.ClaudeWatch showMenuBarItem -bool true
+          open "$APP"
+          for _ in $(seq 60); do
+            curl -sf --noproxy '*' http://127.0.0.1:17831/v1/health >/dev/null && break
+            sleep 1
+          done
+          sleep 10  # let the first cswap account refresh finish
+          python3 Scripts/seed-demo-sessions.py
+          sleep 2
+
+          shot() {
+            open "claudewatch://$1"
+            sleep 3
+            ID="$("$RUNNER_TEMP/window-id" ClaudeWatch)"
+            screencapture -x -l "$ID" "$IMAGES/$2.png"
+          }
+          shot section/overview overview
+          shot session/6f1c2b8e-4d3a-4e5f-9a7b-1c2d3e4f5a6b session-detail
+          shot section/notifications notifications
+          shot section/accounts accounts
+
+          # Menu bar window (needs Accessibility for System Events; optional).
+          if osascript -e 'tell application "System Events" to click menu bar item 1 of menu bar 2 of process "ClaudeWatch"'; then
+            sleep 2
+            if ID="$("$RUNNER_TEMP/window-id" ClaudeWatch --any-layer)"; then
+              screencapture -x -l "$ID" "$IMAGES/menu-bar.png"
+            fi
+            osascript -e 'tell application "System Events" to key code 53' || true
+          fi
+
+          # App icon as rendered by Xcode from the Icon Composer document.
+          ICON="$(/usr/libexec/PlistBuddy -c "Print :CFBundleIconFile" "$APP/Contents/Info.plist")"
+          sips -s format png "$APP/Contents/Resources/${ICON%.icns}.icns" --out "$IMAGES/icon-full.png" >/dev/null
+          sips -Z 256 "$IMAGES/icon-full.png" --out "$IMAGES/icon.png" >/dev/null
+          rm "$IMAGES/icon-full.png"
+
+          # DMG window.
+          Scripts/make-dmg.sh "$APP" build/demo.dmg
+          hdiutil attach build/demo.dmg -noverify >/dev/null
+          open /Volumes/ClaudeWatch
+          sleep 4
+          ID="$("$RUNNER_TEMP/window-id" Finder --width 660)"
+          screencapture -x -l "$ID" "$IMAGES/dmg.png"
+          hdiutil detach /Volumes/ClaudeWatch -force >/dev/null || true
+          ls -la "$IMAGES"
+
+      - name: Upload images
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: readme-images
+          path: build/images
+          if-no-files-found: warn
+
+      - name: Push images to the readme-images branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd "$IMAGES"
+          git init -q
+          git checkout -q -b readme-images
+          git add .
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -qm "README images from ${GITHUB_SHA}"
+          git push -qf "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" readme-images

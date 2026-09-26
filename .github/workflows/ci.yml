@@ -22,7 +22,7 @@ jobs:
       - name: Check shell scripts
         run: |
           apt-get update -qq && apt-get install -y -qq shellcheck >/dev/null
-          shellcheck Integration/*.sh
+          shellcheck Integration/*.sh Scripts/*.sh
 
   macos:
     name: App build & tests (macOS)
@@ -30,8 +30,8 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
-      - name: Toolchain
-        run: xcodebuild -version && swift --version
+      - name: Select Xcode 26
+        uses: ./.github/actions/select-xcode
       - name: Test ClaudeWatchCore
         run: swift test --package-path ClaudeWatchCore
       - name: Build and test ClaudeWatch
@@ -51,7 +51,11 @@ jobs:
           xcodebuild build -project ClaudeWatch.xcodeproj -scheme ClaudeWatch -configuration Release \
             -destination 'platform=macOS' -derivedDataPath build/DerivedData CODE_SIGN_IDENTITY=- \
             | grep -E "error:|warning:|\*\* BUILD" || true
-          test -d "build/DerivedData/Build/Products/Release/ClaudeWatch.app"
+          APP="build/DerivedData/Build/Products/Release/ClaudeWatch.app"
+          test -d "$APP"
+          ICON="$(/usr/libexec/PlistBuddy -c "Print :CFBundleIconFile" "$APP/Contents/Info.plist")"
+          test -f "$APP/Contents/Resources/${ICON%.icns}.icns"
+          echo "App icon: $ICON"
       - name: Upload log
         if: always()
         uses: actions/upload-artifact@v4

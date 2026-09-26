@@ -1,0 +1,18 @@
+name: Select Xcode 26
+description: >
+  Selects the newest installed Xcode 26 release. Xcode 26 is required to compile
+  the Icon Composer app icon (ClaudeWatch/AppIcon.icon).
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        ls -d /Applications/Xcode*.app
+        XCODE="$(ls -d /Applications/Xcode_26*.app 2>/dev/null | grep -viE 'beta|release_candidate|_rc' | sort -V | tail -1 || true)"
+        if [ -z "$XCODE" ]; then
+          echo "::error::Xcode 26 is not installed on this runner; it is needed for the Icon Composer app icon."
+          exit 1
+        fi
+        sudo xcode-select -s "$XCODE/Contents/Developer"
+        xcodebuild -version
+        swift --version
