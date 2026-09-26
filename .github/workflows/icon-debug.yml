@@ -1,0 +1,28 @@
+name: Icon debug (temporary)
+on:
+  pull_request:
+    paths:
+      - .github/workflows/icon-debug.yml
+      - ClaudeWatch/AppIcon.icon/**
+jobs:
+  debug:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, macos-26]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/select-xcode
+      - name: Diagnose icon compilation
+        run: |
+          sw_vers
+          ICT="$(find "$(xcode-select -p)/../Applications" -name ictool -type f 2>/dev/null | head -1)"
+          echo "ictool: $ICT"
+          [ -n "$ICT" ] && { "$ICT" --help 2>&1 | head -40 || true; }
+          mkdir -p /tmp/out
+          xcrun actool ClaudeWatch/AppIcon.icon --compile /tmp/out --platform macosx \
+            --minimum-deployment-target 14.0 --app-icon AppIcon --target-device mac \
+            --output-partial-info-plist /tmp/partial.plist --output-format human-readable-text 2>&1 | tail -40 || true
+          ls -la /tmp/out || true
