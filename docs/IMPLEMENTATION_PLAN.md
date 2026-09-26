@@ -68,3 +68,11 @@ material deviation together with the reason for it.
    user's login shell. Hardened Runtime is on so the app can be notarized.
 8. **Pushover priority is limited to −2…1.** Emergency priority (2) requires
    retry/expire receipts, which adds UI and API surface the spec does not ask for.
+9. **No separate `Project` model.** Project name and working directory are stored on
+   each `ClaudeSession` (and each event record). A separate model would have no
+   behavior of its own in the MVP; it can be introduced once projects carry settings.
+10. **"Mark as Finished" for active sessions.** Active sessions cannot be deleted. A
+    Claude Code process that is killed never sends `Stop`/`SessionEnd`, so instead of
+    allowing deletion of "active" sessions, the UI offers an explicit Mark as Finished
+    action that goes through `SessionStateMachine`. The session can then be deleted
+    normally.
