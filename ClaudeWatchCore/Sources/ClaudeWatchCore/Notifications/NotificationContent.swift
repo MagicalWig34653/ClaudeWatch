@@ -14,6 +14,24 @@ public struct NotificationContent: Sendable, Equatable {
     /// Pushover: "❓ Claude needs input\nWhich migration strategy should be used?"
     public var pushoverMessage: String
     public var url: URL?
+
+    public init(
+        sessionID: String,
+        nativeTitle: String,
+        nativeSubtitle: String,
+        nativeBody: String,
+        pushoverTitle: String,
+        pushoverMessage: String,
+        url: URL?
+    ) {
+        self.sessionID = sessionID
+        self.nativeTitle = nativeTitle
+        self.nativeSubtitle = nativeSubtitle
+        self.nativeBody = nativeBody
+        self.pushoverTitle = pushoverTitle
+        self.pushoverMessage = pushoverMessage
+        self.url = url
+    }
 }
 
 public enum NotificationContentBuilder {

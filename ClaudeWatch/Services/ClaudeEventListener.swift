@@ -56,11 +56,16 @@ final class ClaudeEventListener {
         }
 
         listener.stateUpdateHandler = { [weak self] newState in
-            Task { @MainActor in self?.handle(newState, listener: listener, port: port) }
+            guard let owner = self else { return }
+            Task { @MainActor in owner.handle(newState, listener: listener, port: port) }
         }
         listener.newConnectionHandler = { [weak self] connection in
+            guard let owner = self else {
+                connection.cancel()
+                return
+            }
             let handler = HookConnection(connection: connection, queue: DispatchQueue(label: "ClaudeWatch.connection")) { accepted, payload in
-                Task { @MainActor in self?.record(accepted: accepted, payload: payload) }
+                Task { @MainActor in owner.record(accepted: accepted, payload: payload) }
             }
             handler.start()
         }
