@@ -61,7 +61,7 @@ jobs:
       - name: Capture screenshots
         run: |
           mkdir -p "$IMAGES"
-          defaults write com.claudewatch.ClaudeWatch nativeNotificationsEnabled -bool false
+          # Native notifications stay on (as for users); the permission prompt is not part of the captured window.
           defaults write com.claudewatch.ClaudeWatch showMenuBarItem -bool true
           open "$APP"
           for _ in $(seq 60); do

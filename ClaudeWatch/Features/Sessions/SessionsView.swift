@@ -46,7 +46,7 @@ struct SessionsView: View {
                     }
                 }
             }
-            .frame(minWidth: 280, idealWidth: 320, maxWidth: 420)
+            .frame(minWidth: 260, idealWidth: 300, maxWidth: 360)
 
             Group {
                 if let id = appState.selectedSessionID, let session = sessions.first(where: { $0.id == id }) {
@@ -56,7 +56,7 @@ struct SessionsView: View {
                     ContentUnavailableView("No Session Selected", systemImage: "sidebar.left", description: Text("Select a session to see its details and event history."))
                 }
             }
-            .frame(minWidth: 380, maxWidth: .infinity, maxHeight: .infinity)
+            .frame(minWidth: 420, idealWidth: 560, maxWidth: .infinity, maxHeight: .infinity)
         }
         .searchable(text: $searchText, placement: .toolbar, prompt: "Search sessions")
         .navigationTitle("Sessions")

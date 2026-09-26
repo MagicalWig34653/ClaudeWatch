@@ -1,4 +1,8 @@
-# ClaudeWatch
+<p align="center">
+  <img src="docs/images/icon.png" width="128" height="128" alt="ClaudeWatch icon">
+</p>
+
+<h1 align="center">ClaudeWatch</h1>
 
 A native macOS app that watches your Claude Code sessions and tells you, on your Mac
 and through Pushover on your phone, when a session needs input, needs permission,
@@ -12,6 +16,30 @@ account is active, including accounts switched with
 - Pushover credentials in the Keychain. Claude credentials are never read or stored.
 - No third-party dependencies
 
+<p align="center">
+  <img src="docs/images/overview.png" width="760" alt="ClaudeWatch overview: sessions that need input, permission or plan approval, plus a failed one">
+</p>
+
+## Screenshots
+
+| Sessions | Menu bar |
+|---|---|
+| <img src="docs/images/session-detail.png" width="520" alt="Session list and detail with event history"> | <img src="docs/images/menu-bar.png" width="220" alt="Menu bar window grouping sessions by state"> |
+
+| Notification rules | Accounts from cswap |
+|---|---|
+| <img src="docs/images/notifications.png" width="400" alt="Per-event rules for macOS and Pushover"> | <img src="docs/images/accounts.png" width="400" alt="Accounts discovered through cswap with per-account notifications"> |
+
+<p align="center">
+  <img src="docs/images/dmg.png" width="480" alt="Drag-to-install DMG window">
+</p>
+
+The screenshots come from `.github/workflows/readme-images.yml`, which runs the real app
+on a CI Mac and fills it with demo sessions through the hook listener
+(`Scripts/seed-demo-sessions.py`).
+
+## About
+
 The product specification is in [`SPEC.md`](SPEC.md). Implementation notes and deviations
 from it are in [`docs/IMPLEMENTATION_PLAN.md`](docs/IMPLEMENTATION_PLAN.md). The architecture,
 including the proposed cloud relay, is in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
@@ -19,7 +47,7 @@ including the proposed cloud relay, is in [`docs/ARCHITECTURE.md`](docs/ARCHITEC
 ## Requirements
 
 - macOS 14 Sonoma or newer
-- Xcode 16 or newer (the project uses folder-synchronized groups)
+- Xcode 26 or newer (needed for the Icon Composer app icon)
 - Claude Code with hooks (verified with 2.1.283)
 - Optional: `cswap` (claude-swap ≥ 0.26, JSON schema 1) for account names
 - Optional: a Pushover account and application token
@@ -50,6 +78,11 @@ xcodebuild -project ClaudeWatch.xcodeproj -scheme ClaudeWatch -configuration Rel
 
 The project signs ad hoc ("Sign to Run Locally"). To distribute, pick your team under
 Signing & Capabilities. Hardened Runtime is already on for Release builds.
+
+**App icon:** `ClaudeWatch/AppIcon.icon` is an Icon Composer document: a gradient
+background plus three layers (glass speech bubble, prompt, badge). Open it in Icon Composer,
+which ships with Xcode 26, to adjust the Liquid Glass look. Building requires
+Xcode 26; it generates the classic `.icns` for macOS 14 and 15.
 
 **Releases:** publishing a GitHub release (tag `vX.Y.Z`) runs
 `.github/workflows/release.yml`. It tests the app, builds a universal Release app with

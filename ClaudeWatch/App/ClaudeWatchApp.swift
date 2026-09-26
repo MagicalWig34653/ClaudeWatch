@@ -18,7 +18,7 @@ struct ClaudeWatchApp: App {
                 .onOpenURL { url in appState.actionHandler.handle(url: url) }
         }
         .modelContainer(appState.modelContainer)
-        .defaultSize(width: 1000, height: 660)
+        .defaultSize(width: 1120, height: 700)
         .handlesExternalEvents(matching: ["*"])
         .commands { AppCommands(appState: appState) }
 
