@@ -24,6 +24,22 @@ including the proposed cloud relay, is in [`docs/ARCHITECTURE.md`](docs/ARCHITEC
 - Optional: `cswap` (claude-swap ≥ 0.26, JSON schema 1) for account names
 - Optional: a Pushover account and application token
 
+## Install
+
+Download `ClaudeWatch-<version>.dmg` from the
+[Releases](https://github.com/MagicalWig34653/ClaudeWatch/releases) page, open it and
+drag ClaudeWatch to Applications. A `.sha256` checksum is attached next to each DMG.
+
+Release builds are universal (Apple silicon and Intel) and ad-hoc signed, not notarized.
+macOS will therefore refuse the first launch. Open it once by either:
+
+- trying to open ClaudeWatch, then choosing **System Settings › Privacy & Security ›
+  Open Anyway**, or
+- running `xattr -dr com.apple.quarantine /Applications/ClaudeWatch.app`.
+
+Because every build has a different ad-hoc signature, macOS may ask again for Keychain
+access to the Pushover credentials after an update.
+
 ## Build and run
 
 ```sh
@@ -34,6 +50,13 @@ xcodebuild -project ClaudeWatch.xcodeproj -scheme ClaudeWatch -configuration Rel
 
 The project signs ad hoc ("Sign to Run Locally"). To distribute, pick your team under
 Signing & Capabilities. Hardened Runtime is already on for Release builds.
+
+**Releases:** publishing a GitHub release (tag `vX.Y.Z`) runs
+`.github/workflows/release.yml`. It tests the app, builds a universal Release app with
+`MARKETING_VERSION` taken from the tag, packages `ClaudeWatch-X.Y.Z.dmg` with `hdiutil`,
+and attaches the DMG and its SHA-256 checksum to the release. You can also run the workflow
+manually. With a tag it re-attaches the DMG to that release; without one it only
+produces a workflow artifact.
 
 Tests:
 
