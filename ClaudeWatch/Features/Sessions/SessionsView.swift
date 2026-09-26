@@ -26,11 +26,14 @@ struct SessionsView: View {
             VStack(spacing: 0) {
                 Picker("Filter", selection: $appState.sessionFilter) {
                     ForEach(SessionFilter.allCases) { filter in
-                        Text(filter.title).tag(filter)
+                        Text(filter.segmentTitle)
+                            .help(filter.title)
+                            .tag(filter)
                     }
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
+                .frame(maxWidth: .infinity)
                 .padding(8)
 
                 List(selection: $appState.selectedSessionID) {
@@ -46,7 +49,7 @@ struct SessionsView: View {
                     }
                 }
             }
-            .frame(width: 300)
+            .frame(width: 320)
 
             Divider()
 

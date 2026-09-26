@@ -55,6 +55,11 @@ enum SessionFilter: String, CaseIterable, Identifiable {
         }
     }
 
+    /// Short label for the segmented filter control, which must fit the session list column.
+    var segmentTitle: String {
+        self == .attention ? "Attention" : title
+    }
+
     func matches(_ session: ClaudeSession) -> Bool {
         switch self {
         case .active: return session.isActive
