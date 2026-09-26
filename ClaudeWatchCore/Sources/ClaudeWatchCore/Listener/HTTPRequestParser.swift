@@ -25,6 +25,7 @@ public struct HTTPResponse: Sendable, Equatable {
         case 403: return "Forbidden"
         case 404: return "Not Found"
         case 405: return "Method Not Allowed"
+        case 408: return "Request Timeout"
         case 411: return "Length Required"
         case 413: return "Payload Too Large"
         case 415: return "Unsupported Media Type"

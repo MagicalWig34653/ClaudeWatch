@@ -1,0 +1,421 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D60075B9EA5A5F5D94E1C61D /* ClaudeWatchCore in Frameworks */ = {isa = PBXBuildFile; productRef = 8C0E28B2BBE37341E734438C /* ClaudeWatchCore */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		2A158A96B056715588E6F0C7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 04426F83E2B5FDC1F9EE8250 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EEE8C20DF28AD32C57845399;
+			remoteInfo = ClaudeWatch;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		920056E7344E784A7CDE6EE0 /* ClaudeWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClaudeWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		14E1F1F4411F79989A728F53 /* ClaudeWatchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClaudeWatchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D8698C24CCC1DE5FB0E93078 /* ClaudeWatch-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ClaudeWatch-Info.plist"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		A6A569B5D128212EC928A6D9 /* ClaudeWatch */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ClaudeWatch;
+			sourceTree = "<group>";
+		};
+		34F2A81D0A6FEE0E049D1092 /* ClaudeWatchTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ClaudeWatchTests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4C09D3FB3B67CECCD5521A36 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D60075B9EA5A5F5D94E1C61D /* ClaudeWatchCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5179ED73CD53D7EBCEBBD002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A48225FC968294CA52DA9D57 = {
+			isa = PBXGroup;
+			children = (
+				A6A569B5D128212EC928A6D9 /* ClaudeWatch */,
+				34F2A81D0A6FEE0E049D1092 /* ClaudeWatchTests */,
+				3C7AA13C68D299873021C6EB /* Config */,
+				BE34CF48B76B2C2BD8A32D81 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		BE34CF48B76B2C2BD8A32D81 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				920056E7344E784A7CDE6EE0 /* ClaudeWatch.app */,
+				14E1F1F4411F79989A728F53 /* ClaudeWatchTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3C7AA13C68D299873021C6EB /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				D8698C24CCC1DE5FB0E93078 /* ClaudeWatch-Info.plist */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		EEE8C20DF28AD32C57845399 /* ClaudeWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C62731F5559E12F519F59FE3 /* Build configuration list for PBXNativeTarget "ClaudeWatch" */;
+			buildPhases = (
+				DC2A2AEAAC03360F5B8C02DA /* Sources */,
+				4C09D3FB3B67CECCD5521A36 /* Frameworks */,
+				9514D34A74F5B36872FF5F75 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A6A569B5D128212EC928A6D9 /* ClaudeWatch */,
+			);
+			name = ClaudeWatch;
+			packageProductDependencies = (
+				8C0E28B2BBE37341E734438C /* ClaudeWatchCore */,
+			);
+			productName = ClaudeWatch;
+			productReference = 920056E7344E784A7CDE6EE0 /* ClaudeWatch.app */;
+			productType = "com.apple.product-type.application";
+		};
+		5012806CF1086C83604390E0 /* ClaudeWatchTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AB1A6F3713631243F7C575FC /* Build configuration list for PBXNativeTarget "ClaudeWatchTests" */;
+			buildPhases = (
+				651C3EE5B236F4681293058C /* Sources */,
+				5179ED73CD53D7EBCEBBD002 /* Frameworks */,
+				593D1BB2761D66DF24FAAABA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				23315CD7B3ECE57A208A593C /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				34F2A81D0A6FEE0E049D1092 /* ClaudeWatchTests */,
+			);
+			name = ClaudeWatchTests;
+			packageProductDependencies = (
+			);
+			productName = ClaudeWatchTests;
+			productReference = 14E1F1F4411F79989A728F53 /* ClaudeWatchTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		04426F83E2B5FDC1F9EE8250 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					EEE8C20DF28AD32C57845399 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					5012806CF1086C83604390E0 = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = EEE8C20DF28AD32C57845399;
+					};
+				};
+			};
+			buildConfigurationList = 8ABDF2ABB8B33C663F07FAB0 /* Build configuration list for PBXProject "ClaudeWatch" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A48225FC968294CA52DA9D57;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				1211426B2D754B0FEE5115D1 /* XCLocalSwiftPackageReference "ClaudeWatchCore" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = BE34CF48B76B2C2BD8A32D81 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				EEE8C20DF28AD32C57845399 /* ClaudeWatch */,
+				5012806CF1086C83604390E0 /* ClaudeWatchTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		9514D34A74F5B36872FF5F75 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		593D1BB2761D66DF24FAAABA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		DC2A2AEAAC03360F5B8C02DA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		651C3EE5B236F4681293058C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		23315CD7B3ECE57A208A593C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EEE8C20DF28AD32C57845399 /* ClaudeWatch */;
+			targetProxy = 2A158A96B056715588E6F0C7 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		C1381940D55E1EE061CDF816 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		EF62503EB7628DC511AAD984 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		7EE29AED0EC6096A871396EB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = NO;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/ClaudeWatch-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = ClaudeWatch;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.claudewatch.ClaudeWatch;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		3A9BFDB7D39E97BF07D201F3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/ClaudeWatch-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = ClaudeWatch;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.claudewatch.ClaudeWatch;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		92C592D02A1ECA1883AF1702 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.claudewatch.ClaudeWatchTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ClaudeWatch.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ClaudeWatch";
+			};
+			name = Debug;
+		};
+		943D5539D3A664F40AA92212 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.claudewatch.ClaudeWatchTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ClaudeWatch.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ClaudeWatch";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		8ABDF2ABB8B33C663F07FAB0 /* Build configuration list for PBXProject "ClaudeWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C1381940D55E1EE061CDF816 /* Debug */,
+				EF62503EB7628DC511AAD984 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C62731F5559E12F519F59FE3 /* Build configuration list for PBXNativeTarget "ClaudeWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7EE29AED0EC6096A871396EB /* Debug */,
+				3A9BFDB7D39E97BF07D201F3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AB1A6F3713631243F7C575FC /* Build configuration list for PBXNativeTarget "ClaudeWatchTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				92C592D02A1ECA1883AF1702 /* Debug */,
+				943D5539D3A664F40AA92212 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		1211426B2D754B0FEE5115D1 /* XCLocalSwiftPackageReference "ClaudeWatchCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ClaudeWatchCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8C0E28B2BBE37341E734438C /* ClaudeWatchCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ClaudeWatchCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 04426F83E2B5FDC1F9EE8250 /* Project object */;
+}

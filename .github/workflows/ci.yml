@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "claude/**"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  core-linux:
+    name: Core tests (Linux)
+    runs-on: ubuntu-latest
+    container: swift:6.1-noble
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test ClaudeWatchCore
+        run: swift test --package-path ClaudeWatchCore
+      - name: Check shell scripts
+        run: |
+          apt-get update -qq && apt-get install -y -qq shellcheck >/dev/null
+          shellcheck Integration/*.sh
+
+  macos:
+    name: App build & tests (macOS)
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Toolchain
+        run: xcodebuild -version && swift --version
+      - name: Test ClaudeWatchCore
+        run: swift test --package-path ClaudeWatchCore
+      - name: Build and test ClaudeWatch
+        run: |
+          mkdir -p build
+          xcodebuild test \
+            -project ClaudeWatch.xcodeproj \
+            -scheme ClaudeWatch \
+            -destination 'platform=macOS' \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGN_IDENTITY=- \
+            | tee build/xcodebuild.log | grep -E "error:|warning:|Test Suite|Executed|\*\* (BUILD|TEST)" || true
+          grep -q "\*\* TEST SUCCEEDED \*\*" build/xcodebuild.log
+      - name: Build Release
+        run: |
+          set -o pipefail
+          xcodebuild build -project ClaudeWatch.xcodeproj -scheme ClaudeWatch -configuration Release \
+            -destination 'platform=macOS' -derivedDataPath build/DerivedData CODE_SIGN_IDENTITY=- \
+            | grep -E "error:|warning:|\*\* BUILD" || true
+          test -d "build/DerivedData/Build/Products/Release/ClaudeWatch.app"
+      - name: Upload log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcodebuild-log
+          path: build/xcodebuild.log
+          if-no-files-found: ignore
