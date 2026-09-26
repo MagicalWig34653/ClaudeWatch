@@ -1,0 +1,32 @@
+{
+  "session_id": "6f1c2b8e-4d3a-4e5f-9a7b-1c2d3e4f5a6b",
+  "transcript_path": "/Users/example/.claude/projects/-Users-example-Projects-backend-api/6f1c2b8e-4d3a-4e5f-9a7b-1c2d3e4f5a6b.jsonl",
+  "cwd": "/Users/example/Projects/backend-api",
+  "prompt_id": "8e8d71dc-7cca-426e-8a3b-87aef8cb8a0b",
+  "permission_mode": "default",
+  "effort": {
+    "level": "high"
+  },
+  "hook_event_name": "PreToolUse",
+  "tool_name": "AskUserQuestion",
+  "tool_input": {
+    "questions": [
+      {
+        "question": "Which migration strategy should be used?",
+        "header": "Migration",
+        "multiSelect": false,
+        "options": [
+          {
+            "label": "Online",
+            "description": "Backfill in batches while serving traffic"
+          },
+          {
+            "label": "Offline",
+            "description": "Take a maintenance window"
+          }
+        ]
+      }
+    ]
+  },
+  "tool_use_id": "toolu_01AskUserQuestionExample0"
+}

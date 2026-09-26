@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "activeAccountNumber": 1,
+  "accounts": [
+    {
+      "number": 1,
+      "email": "work@example.com",
+      "organizationName": "",
+      "organizationUuid": "",
+      "isOrganization": false,
+      "active": true,
+      "usageStatus": "api_key",
+      "usage": null,
+      "alias": "work"
+    },
+    {
+      "number": 2,
+      "email": "me@example.org",
+      "organizationName": "",
+      "organizationUuid": "",
+      "isOrganization": false,
+      "active": false,
+      "usageStatus": "api_key",
+      "usage": null,
+      "alias": "personal",
+      "disabled": true
+    }
+  ]
+}
