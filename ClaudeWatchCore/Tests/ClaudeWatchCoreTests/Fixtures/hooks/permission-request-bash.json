@@ -1,0 +1,29 @@
+{
+  "session_id": "6f1c2b8e-4d3a-4e5f-9a7b-1c2d3e4f5a6b",
+  "transcript_path": "/Users/example/.claude/projects/-Users-example-Projects-backend-api/6f1c2b8e-4d3a-4e5f-9a7b-1c2d3e4f5a6b.jsonl",
+  "cwd": "/Users/example/Projects/backend-api",
+  "prompt_id": "8e8d71dc-7cca-426e-8a3b-87aef8cb8a0b",
+  "permission_mode": "default",
+  "effort": {
+    "level": "high"
+  },
+  "hook_event_name": "PermissionRequest",
+  "tool_name": "Bash",
+  "tool_input": {
+    "command": "ls /Users/example/Projects",
+    "description": "List contents of /Users/example/Projects"
+  },
+  "permission_suggestions": [
+    {
+      "type": "addRules",
+      "rules": [
+        {
+          "toolName": "Read",
+          "ruleContent": "//Users/example/Projects/**"
+        }
+      ],
+      "behavior": "allow",
+      "destination": "session"
+    }
+  ]
+}
