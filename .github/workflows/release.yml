@@ -1,0 +1,120 @@
+name: Release DMG
+
+# Builds ClaudeWatch.app (Release, universal) into a DMG and attaches it to the release.
+# Runs automatically when a release is published; can also be started manually to
+# build a DMG as a workflow artifact (and optionally attach it to an existing release).
+# Pull requests that change this workflow build the DMG as an artifact only.
+on:
+  release:
+    types: [published]
+  pull_request:
+    paths:
+      - .github/workflows/release.yml
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to attach the DMG to (leave empty to only build an artifact)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.event.release.tag_name || inputs.tag || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  dmg:
+    name: Build DMG
+    runs-on: macos-15
+    timeout-minutes: 30
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag || github.sha }}
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ -n "$TAG" ]; then
+            VERSION="${TAG#v}"
+          else
+            VERSION="0.0.0-dev.$(git rev-parse --short HEAD)"
+          fi
+          case "$VERSION" in
+            ''|*[!A-Za-z0-9._-]*) echo "Unsupported tag '$TAG': use letters, digits, '.', '_' or '-' (e.g. v0.1.0)"; exit 1 ;;
+          esac
+          # CFBundleShortVersionString must be numeric (x.y.z); keep any suffix only in the file name.
+          MARKETING_VERSION="$(printf '%s' "$VERSION" | sed -E 's/^([0-9]+(\.[0-9]+){0,2}).*/\1/')"
+          case "$MARKETING_VERSION" in
+            ''|*[!0-9.]*) MARKETING_VERSION="0.0.0" ;;
+          esac
+          {
+            echo "version=$VERSION"
+            echo "marketing=$MARKETING_VERSION"
+            echo "build=${GITHUB_RUN_NUMBER}"
+          } >> "$GITHUB_OUTPUT"
+          echo "Version $VERSION (marketing $MARKETING_VERSION, build $GITHUB_RUN_NUMBER)"
+
+      - name: Test
+        run: |
+          swift test --package-path ClaudeWatchCore
+          mkdir -p build
+          xcodebuild test \
+            -project ClaudeWatch.xcodeproj -scheme ClaudeWatch \
+            -destination 'platform=macOS' -derivedDataPath build/DerivedData \
+            CODE_SIGN_IDENTITY=- > build/test.log 2>&1 || { tail -80 build/test.log; exit 1; }
+          grep -E "Executed .* tests" build/test.log | tail -1
+
+      - name: Build Release app
+        run: |
+          xcodebuild build \
+            -project ClaudeWatch.xcodeproj -scheme ClaudeWatch -configuration Release \
+            -destination 'generic/platform=macOS' -derivedDataPath build/DerivedData \
+            CODE_SIGN_IDENTITY=- \
+            MARKETING_VERSION="${{ steps.version.outputs.marketing }}" \
+            CURRENT_PROJECT_VERSION="${{ steps.version.outputs.build }}" \
+            > build/release.log 2>&1 || { tail -80 build/release.log; exit 1; }
+          APP="build/DerivedData/Build/Products/Release/ClaudeWatch.app"
+          test -d "$APP"
+          codesign --verify --deep --strict --verbose=2 "$APP"
+          lipo -archs "$APP/Contents/MacOS/ClaudeWatch"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP/Contents/Info.plist"
+
+      - name: Create DMG
+        id: dmg
+        run: |
+          APP="build/DerivedData/Build/Products/Release/ClaudeWatch.app"
+          DMG="ClaudeWatch-${{ steps.version.outputs.version }}.dmg"
+          STAGING="$(mktemp -d)"
+          ditto "$APP" "$STAGING/ClaudeWatch.app"
+          ln -s /Applications "$STAGING/Applications"
+          hdiutil create -volname "ClaudeWatch" -srcfolder "$STAGING" -fs HFS+ -format UDZO -ov "build/$DMG"
+          hdiutil verify "build/$DMG"
+          (cd build && shasum -a 256 "$DMG" > "$DMG.sha256")
+          cat "build/$DMG.sha256"
+          {
+            echo "path=build/$DMG"
+            echo "name=$DMG"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.dmg.outputs.name }}
+          path: |
+            ${{ steps.dmg.outputs.path }}
+            ${{ steps.dmg.outputs.path }}.sha256
+          if-no-files-found: error
+
+      - name: Attach DMG to release
+        if: env.TAG != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "$TAG" \
+            "${{ steps.dmg.outputs.path }}" "${{ steps.dmg.outputs.path }}.sha256" \
+            --repo "$GITHUB_REPOSITORY" --clobber
