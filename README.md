@@ -11,6 +11,7 @@ account is active, including accounts switched with
 [`cswap`](https://github.com/realiti4/claude-swap).
 
 - Main window (Overview, Sessions, Accounts, Notifications, Settings) plus a `MenuBarExtra`
+- Closing the window keeps ClaudeWatch running in the menu bar (no Dock icon); quit with ⌘Q or "Quit ClaudeWatch"
 - Local hook listener on `127.0.0.1:17831`
 - SwiftData history, per-event notification rules, pause, retention
 - Pushover credentials in the Keychain. Claude credentials are never read or stored.

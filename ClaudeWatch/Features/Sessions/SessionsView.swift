@@ -24,13 +24,13 @@ struct SessionsView: View {
         @Bindable var appState = appState
         HStack(spacing: 0) {
             VStack(spacing: 0) {
-                Picker("Filter", selection: $appState.sessionFilter) {
-                    ForEach(SessionFilter.allCases) { filter in
-                        Text(filter.title).tag(filter)
-                    }
+                // Segmented when it fits the column; a pop-up menu otherwise, so wider
+                // control metrics on newer macOS versions never overflow into the detail pane.
+                ViewThatFits(in: .horizontal) {
+                    filterPicker.pickerStyle(.segmented)
+                    filterPicker.pickerStyle(.menu).fixedSize()
                 }
-                .pickerStyle(.segmented)
-                .labelsHidden()
+                .frame(maxWidth: .infinity)
                 .padding(8)
 
                 List(selection: $appState.selectedSessionID) {
@@ -46,7 +46,7 @@ struct SessionsView: View {
                     }
                 }
             }
-            .frame(width: 300)
+            .frame(width: 320)
 
             Divider()
 
@@ -76,6 +76,18 @@ struct SessionsView: View {
         } message: { session in
             Text(verbatim: "\(session.projectName) · \(session.displayAccount)")
         }
+    }
+
+    private var filterPicker: some View {
+        @Bindable var appState = appState
+        return Picker("Filter", selection: $appState.sessionFilter) {
+            ForEach(SessionFilter.allCases) { filter in
+                Text(filter.segmentTitle)
+                    .help(filter.title)
+                    .tag(filter)
+            }
+        }
+        .labelsHidden()
     }
 
     @ViewBuilder

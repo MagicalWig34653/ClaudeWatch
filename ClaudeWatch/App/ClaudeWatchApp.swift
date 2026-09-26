@@ -3,6 +3,7 @@ import SwiftData
 
 @main
 struct ClaudeWatchApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @State private var appState: AppState
     @AppStorage(Preferences.Key.showMenuBarItem) private var showMenuBarItem = true
 
