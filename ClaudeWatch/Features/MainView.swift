@@ -27,6 +27,8 @@ struct MainView: View {
         .onAppear {
             let openWindow = openWindow
             appState.openMainWindowAction = { openWindow(id: AppState.mainWindowID) }
+            appState.mainWindowDidAppear()
         }
+        .onDisappear { appState.mainWindowDidDisappear() }
     }
 }

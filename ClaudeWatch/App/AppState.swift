@@ -208,6 +208,20 @@ final class AppState {
         actionHandler.openMainWindow()
     }
 
+    // MARK: - Background mode
+
+    /// The Dock icon is shown while the main window is open.
+    func mainWindowDidAppear() {
+        NSApp.setActivationPolicy(.regular)
+    }
+
+    /// With the window closed, ClaudeWatch keeps running from the menu bar without a Dock
+    /// icon. If the menu bar item is hidden, the Dock icon stays so the app remains reachable.
+    func mainWindowDidDisappear() {
+        guard UserDefaults.standard.bool(forKey: Preferences.Key.showMenuBarItem) else { return }
+        NSApp.setActivationPolicy(.accessory)
+    }
+
     // MARK: - Maintenance
 
     private func startBackgroundWork() async {

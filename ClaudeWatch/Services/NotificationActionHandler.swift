@@ -33,6 +33,7 @@ final class NotificationActionHandler {
     }
 
     func openMainWindow() {
+        NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
         if let open = appState?.openMainWindowAction {
             open()
