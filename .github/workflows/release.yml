@@ -3,9 +3,13 @@ name: Release DMG
 # Builds ClaudeWatch.app (Release, universal) into a DMG and attaches it to the release.
 # Runs automatically when a release is published; can also be started manually to
 # build a DMG as a workflow artifact (and optionally attach it to an existing release).
+# Pull requests that change this workflow build the DMG as an artifact only.
 on:
   release:
     types: [published]
+  pull_request:
+    paths:
+      - .github/workflows/release.yml
   workflow_dispatch:
     inputs:
       tag:
@@ -30,7 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.release.tag_name || inputs.tag || github.ref }}
+          ref: ${{ github.event.release.tag_name || inputs.tag || github.sha }}
 
       - name: Determine version
         id: version
