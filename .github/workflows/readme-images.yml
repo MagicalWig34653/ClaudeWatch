@@ -22,7 +22,7 @@ concurrency:
 jobs:
   images:
     name: Capture README images
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 30
     env:
       APP: build/DerivedData/Build/Products/Release/ClaudeWatch.app
