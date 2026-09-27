@@ -6,6 +6,8 @@ import ClaudeWatchCore
 /// Notifications arriving within the grouping window are combined per channel.
 @MainActor
 final class NotificationGroupingTests: XCTestCase {
+    /// Held for the whole test: a ModelContext does not keep its container alive.
+    private var container: ModelContainer!
     private var context: ModelContext!
     private var native: FakeNativeNotifier!
     private var pushover: FakePushover!
@@ -14,7 +16,7 @@ final class NotificationGroupingTests: XCTestCase {
     private var processor: ClaudeEventProcessor!
 
     override func setUp() async throws {
-        let container = DataStore.makeInMemory()
+        container = DataStore.makeInMemory()
         context = container.mainContext
         DataStore.seedNotificationRules(in: context)
         native = FakeNativeNotifier()
