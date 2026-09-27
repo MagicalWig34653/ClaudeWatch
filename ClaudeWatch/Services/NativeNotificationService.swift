@@ -89,9 +89,11 @@ final class NativeNotificationService: NSObject, NativeNotifying {
         notification.title = content.nativeTitle
         notification.subtitle = content.nativeSubtitle
         notification.body = content.nativeBody
-        notification.threadIdentifier = content.sessionID
+        // Grouped notifications without a single session share one thread.
+        notification.threadIdentifier = content.sessionID.isEmpty ? "claudewatch-group" : content.sessionID
         notification.sound = playSound ? .default : nil
-        var userInfo: [String: String] = [Self.sessionIDKey: content.sessionID]
+        var userInfo: [String: String] = [:]
+        if !content.sessionID.isEmpty { userInfo[Self.sessionIDKey] = content.sessionID }
         if let url = content.url { userInfo[Self.remoteURLKey] = url.absoluteString }
         notification.userInfo = userInfo
 

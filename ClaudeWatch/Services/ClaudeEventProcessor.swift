@@ -21,6 +21,14 @@ final class ClaudeEventProcessor {
     private let preferences: () -> NotificationPreferences
     private let deduplicator: EventDeduplicator
     private let now: () -> Date
+    private var batcher: NotificationBatcher<PendingDelivery>!
+
+    /// A notification waiting in the grouping window, with the record to update once sent.
+    private struct PendingDelivery {
+        let recordID: UUID?
+        let item: NotificationBatchItem
+        let decision: NotificationDecision
+    }
 
     /// Called after every processed event (e.g. to refresh menu bar counts).
     var onChange: (() -> Void)?
@@ -31,6 +39,7 @@ final class ClaudeEventProcessor {
         pushover: PushoverSending,
         preferences: @escaping () -> NotificationPreferences = { Preferences.notificationPreferences() },
         deduplicator: EventDeduplicator = EventDeduplicator(),
+        groupingWindow: @escaping () -> TimeInterval = { 0 },
         now: @escaping () -> Date = Date.init
     ) {
         self.context = context
@@ -39,6 +48,14 @@ final class ClaudeEventProcessor {
         self.preferences = preferences
         self.deduplicator = deduplicator
         self.now = now
+        self.batcher = NotificationBatcher(window: groupingWindow) { [weak self] group in
+            await self?.deliver(group)
+        }
+    }
+
+    /// Sends notifications still waiting in the grouping window now.
+    func flushPendingNotifications() async {
+        await batcher.flush()
     }
 
     /// Processes one event. State and history are saved before any notification is sent,
@@ -78,7 +95,11 @@ final class ClaudeEventProcessor {
         onChange?()
 
         if let rule, decision.sendsAnything {
-            await deliver(event: event, rule: rule, decision: decision, record: record)
+            await batcher.add(PendingDelivery(
+                recordID: record?.id,
+                item: NotificationBatchItem(event: event, rule: rule),
+                decision: decision
+            ))
         }
         return Outcome(status: session.status, isDuplicate: isDuplicate, recorded: record != nil, decision: decision)
     }
@@ -181,26 +202,45 @@ final class ClaudeEventProcessor {
         return true
     }
 
-    private func deliver(event: ClaudeEvent, rule: NotificationRuleSnapshot, decision: NotificationDecision, record: ClaudeEventRecord?) async {
-        let content = NotificationContentBuilder.build(event: event, rule: rule)
+    /// Delivers a group: one notification per channel, combined when the group has
+    /// several items. Records are updated with the per-channel result.
+    private func deliver(_ group: [PendingDelivery]) async {
+        guard !preferences().isPaused else {
+            Log.notifications.info("Dropped \(group.count, privacy: .public) grouped notifications: paused")
+            return
+        }
 
+        let nativeItems = group.filter(\.decision.sendNative)
         var nativeError: String?
-        if decision.sendNative {
-            nativeError = await deliverNative(content, playSound: decision.playSound)
-        }
-        var pushoverError: String?
-        if decision.sendPushover {
-            pushoverError = await deliverPushover(content, priority: rule.pushoverPriority, playSound: rule.playNativeSound)
+        if !nativeItems.isEmpty {
+            let content = NotificationSummaryBuilder.build(nativeItems.map(\.item))
+            nativeError = await deliverNative(content, playSound: nativeItems.contains(where: \.decision.playSound))
         }
 
-        guard let record else { return }
-        if decision.sendNative {
-            record.wasNativeNotificationSent = nativeError == nil
-            record.nativeNotificationError = nativeError
+        let pushoverItems = group.filter(\.decision.sendPushover).map(\.item)
+        var pushoverError: String?
+        if !pushoverItems.isEmpty {
+            pushoverError = await deliverPushover(
+                NotificationSummaryBuilder.build(pushoverItems),
+                priority: NotificationSummaryBuilder.pushoverPriority(pushoverItems),
+                playSound: pushoverItems.contains(where: \.rule.playNativeSound)
+            )
         }
-        if decision.sendPushover {
-            record.wasPushoverSent = pushoverError == nil
-            record.pushoverError = pushoverError
+
+        let ids = group.compactMap(\.recordID)
+        guard !ids.isEmpty else { return }
+        let records = (try? context.fetch(FetchDescriptor<ClaudeEventRecord>(predicate: #Predicate { ids.contains($0.id) }))) ?? []
+        let recordsByID = Dictionary(records.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        for entry in group {
+            guard let id = entry.recordID, let record = recordsByID[id] else { continue }
+            if entry.decision.sendNative {
+                record.wasNativeNotificationSent = nativeError == nil
+                record.nativeNotificationError = nativeError
+            }
+            if entry.decision.sendPushover {
+                record.wasPushoverSent = pushoverError == nil
+                record.pushoverError = pushoverError
+            }
         }
         save()
     }

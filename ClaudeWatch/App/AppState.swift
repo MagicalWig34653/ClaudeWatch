@@ -124,7 +124,12 @@ final class AppState {
         nativeNotifications = native
         self.pushover = pushover
         listener = ClaudeEventListener()
-        processor = ClaudeEventProcessor(context: context, native: native, pushover: pushover)
+        processor = ClaudeEventProcessor(
+            context: context,
+            native: native,
+            pushover: pushover,
+            groupingWindow: { Preferences.notificationGroupingWindow() }
+        )
         accounts = AccountService(context: context)
         launchAtLogin = LaunchAtLoginService()
 

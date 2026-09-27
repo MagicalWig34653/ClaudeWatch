@@ -11,6 +11,7 @@ struct NotificationSettingsView: View {
     @AppStorage(Preferences.Key.nativeNotificationsEnabled) private var nativeEnabled = true
     @AppStorage(Preferences.Key.notificationSoundEnabled) private var soundEnabled = true
     @AppStorage(Preferences.Key.notificationsPausedUntil) private var pausedUntil = 0.0
+    @AppStorage(Preferences.Key.notificationGroupingWindow) private var groupingWindow = Preferences.defaultGroupingWindow
 
     @State private var nativeTestError: String?
 
@@ -27,6 +28,16 @@ struct NotificationSettingsView: View {
                 Toggle("Pushover", isOn: $pushoverEnabled)
                 Toggle("Native macOS notifications", isOn: $nativeEnabled)
                 Toggle("Sound", isOn: $soundEnabled)
+                Picker(selection: $groupingWindow) {
+                    Text("Off").tag(0.0)
+                    Text("5 seconds").tag(5.0)
+                    Text("10 seconds").tag(10.0)
+                    Text("30 seconds").tag(30.0)
+                    Text("1 minute").tag(60.0)
+                } label: {
+                    Text("Group notifications")
+                    Text("Notifications arriving within this time are combined into one, e.g. “10 sessions finished”.")
+                }
                 pauseControls
             }
 

@@ -14,6 +14,7 @@ account is active, including accounts switched with
 - Closing the window keeps ClaudeWatch running in the menu bar (no Dock icon); quit with ⌘Q or "Quit ClaudeWatch"
 - Local hook listener on `127.0.0.1:17831`
 - SwiftData history, per-event notification rules, pause, retention
+- Notification grouping: events arriving within a few seconds are combined into one notification per channel (e.g. "10 sessions finished"); configurable or off in Notifications
 - Pushover credentials in the Keychain. Claude credentials are never read or stored.
 - No third-party dependencies
 
