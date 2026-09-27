@@ -14,7 +14,11 @@ enum Preferences {
         /// Seconds since 1970; 0 = not paused.
         static let notificationsPausedUntil = "notificationsPausedUntil"
         static let cswapPathOverride = "cswapPathOverride"
+        /// Seconds notifications are collected before sending; 0 sends each immediately.
+        static let notificationGroupingWindow = "notificationGroupingWindow"
     }
+
+    static let defaultGroupingWindow: TimeInterval = 5
 
     static let defaultListenerPort = 17831
     static let defaultRetentionDays = 30
@@ -31,6 +35,7 @@ enum Preferences {
             Key.listenerPort: defaultListenerPort,
             Key.notificationsPausedUntil: 0.0,
             Key.cswapPathOverride: "",
+            Key.notificationGroupingWindow: defaultGroupingWindow,
         ])
     }
 
@@ -45,6 +50,10 @@ enum Preferences {
             soundEnabled: defaults.bool(forKey: Key.notificationSoundEnabled),
             isPaused: isPaused(pausedUntil: defaults.double(forKey: Key.notificationsPausedUntil), now: now)
         )
+    }
+
+    static func notificationGroupingWindow(from defaults: UserDefaults = .standard) -> TimeInterval {
+        min(max(defaults.double(forKey: Key.notificationGroupingWindow), 0), 300)
     }
 
     static func listenerPort(from defaults: UserDefaults = .standard) -> UInt16 {

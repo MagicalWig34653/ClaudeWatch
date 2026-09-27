@@ -28,6 +28,10 @@ final class NotificationActionHandler {
             appState.selectedSection = .sessions
             appState.selectedSessionID = sessionID
             appState.sessionFilter = .all
+        } else {
+            // A grouped notification covers several sessions: show the list.
+            appState.selectedSection = .sessions
+            appState.sessionFilter = .all
         }
         openMainWindow()
     }
