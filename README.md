@@ -70,6 +70,10 @@ macOS will therefore refuse the first launch. Open it once by either:
 Because every build has a different ad-hoc signature, macOS may ask again for Keychain
 access to the Pushover credentials after an update.
 
+## App Store / TestFlight
+
+The sandboxed App Store build and the notarized DMG are described in [`docs/APP_STORE.md`](docs/APP_STORE.md).
+
 ## Build and run
 
 ```sh
