@@ -929,7 +929,7 @@ Security requirements:
 9. UI rendering must not interpret session content as executable content.
 10. The application must function without broad filesystem scans.
 
-Because this is a developer utility distributed outside the Mac App Store, do not spend substantial effort on App Store sandbox compatibility during MVP development if it interferes with required developer-tool integrations.
+Because this is a developer utility primarily distributed outside the Mac App Store (a sandboxed App Store build is described in `docs/APP_STORE.md`), do not spend substantial effort on App Store sandbox compatibility during MVP development if it interferes with required developer-tool integrations.
 
 Keep the design compatible with future signing/notarization.
 
