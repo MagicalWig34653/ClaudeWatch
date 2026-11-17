@@ -99,6 +99,8 @@ final class AppState {
     // Menu bar summary
     private(set) var attentionCount = 0
     private(set) var activeCount = 0
+    private(set) var sessionCount = 0
+    private(set) var finishedTodayCount = 0
 
     var testEventStatus: TestEventStatus = .idle
 
@@ -182,6 +184,8 @@ final class AppState {
     func refreshCounts() {
         let context = modelContainer.mainContext
         let activeRaw = SessionStatus.allCases.filter(\.isActive).map(\.rawValue)
+        sessionCount = (try? context.fetchCount(FetchDescriptor<ClaudeSession>())) ?? 0
+        finishedTodayCount = (try? context.fetchCount(SessionQueries.finishedToday())) ?? 0
         attentionCount = (try? context.fetchCount(FetchDescriptor<ClaudeSession>(predicate: #Predicate { $0.requiresAttention == true }))) ?? 0
         activeCount = (try? context.fetchCount(FetchDescriptor<ClaudeSession>(predicate: #Predicate { activeRaw.contains($0.statusRaw) }))) ?? 0
     }

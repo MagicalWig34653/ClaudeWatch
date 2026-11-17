@@ -8,14 +8,10 @@ struct MenuBarView: View {
     @Environment(AppState.self) private var appState
     @Environment(\.openWindow) private var openWindow
     @Environment(\.dismiss) private var dismiss
-    @Query(sort: \ClaudeSession.updatedAt, order: .reverse) private var sessions: [ClaudeSession]
+    @Query(SessionQueries.menuAttention) private var attention: [ClaudeSession]
+    @Query(SessionQueries.menuRunning) private var running: [ClaudeSession]
+    @Query(SessionQueries.menuFinished) private var recentlyFinished: [ClaudeSession]
     @AppStorage(Preferences.Key.notificationsPausedUntil) private var pausedUntil = 0.0
-
-    private var attention: [ClaudeSession] { Array(sessions.filter(\.requiresAttention).prefix(5)) }
-    private var running: [ClaudeSession] { Array(sessions.filter { $0.isActive && !$0.requiresAttention }.prefix(5)) }
-    private var recentlyFinished: [ClaudeSession] {
-        Array(sessions.filter { $0.status == .finished }.prefix(3))
-    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -36,7 +32,7 @@ struct MenuBarView: View {
                 .foregroundStyle(.red)
             }
 
-            if sessions.isEmpty {
+            if appState.sessionCount == 0 {
                 Text("No Claude Code sessions yet.")
                     .foregroundStyle(.secondary)
                     .padding(.vertical, 6)

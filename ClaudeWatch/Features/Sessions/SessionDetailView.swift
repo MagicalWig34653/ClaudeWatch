@@ -5,17 +5,7 @@ import ClaudeWatchCore
 struct SessionDetailView: View {
     @Environment(AppState.self) private var appState
     let session: ClaudeSession
-    @Query private var events: [ClaudeEventRecord]
     @State private var confirmDelete = false
-
-    init(session: ClaudeSession) {
-        self.session = session
-        let id = session.id
-        _events = Query(
-            filter: #Predicate<ClaudeEventRecord> { $0.sessionID == id },
-            sort: [SortDescriptor(\.receivedAt, order: .reverse)]
-        )
-    }
 
     var body: some View {
         Form {
@@ -67,13 +57,7 @@ struct SessionDetailView: View {
             }
 
             Section("Event History") {
-                if events.isEmpty {
-                    Text("No recorded events.").foregroundStyle(.secondary)
-                } else {
-                    ForEach(events) { event in
-                        EventRow(event: event)
-                    }
-                }
+                EventHistoryView(sessionID: session.id)
             }
 
             Section {
@@ -90,6 +74,53 @@ struct SessionDetailView: View {
         .formStyle(.grouped)
         .confirmationDialog("Delete this session and its event history?", isPresented: $confirmDelete) {
             Button("Delete", role: .destructive) { appState.deleteSession(session) }
+        }
+    }
+}
+
+private struct EventHistoryView: View {
+    let sessionID: String
+    @State private var page = 0
+
+    var body: some View {
+        EventHistoryPage(sessionID: sessionID, page: $page)
+            .id(page)
+    }
+}
+
+/// Only the visible page participates in Observation; older pages stay in SwiftData.
+private struct EventHistoryPage: View {
+    @Environment(\.modelContext) private var context
+    @Query private var events: [ClaudeEventRecord]
+    @Binding var page: Int
+    let sessionID: String
+
+    init(sessionID: String, page: Binding<Int>) {
+        self.sessionID = sessionID
+        _page = page
+        _events = Query(EventHistoryQuery.page(sessionID: sessionID, index: page.wrappedValue))
+    }
+
+    var body: some View {
+        // Count in the store instead of materializing the complete event history.
+        let total = (try? context.fetchCount(EventHistoryQuery.records(sessionID: sessionID))) ?? 0
+        if events.isEmpty {
+            Text("No recorded events.").foregroundStyle(.secondary)
+        } else {
+            ForEach(events) { event in
+                EventRow(event: event)
+            }
+        }
+        if page > 0 || total > EventHistoryQuery.pageSize {
+            HStack {
+                Button("Newer Events") { page -= 1 }
+                    .disabled(page == 0)
+                Spacer()
+                Text("Page \(page + 1)").foregroundStyle(.secondary)
+                Spacer()
+                Button("Older Events") { page += 1 }
+                    .disabled((page + 1) * EventHistoryQuery.pageSize >= total)
+            }
         }
     }
 }

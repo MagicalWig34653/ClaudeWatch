@@ -14,6 +14,12 @@ final class MemoryQueryTests: XCTestCase {
             let session = ClaudeSession(id: "old-\(index)", projectName: "Old", source: .local,
                                         status: .finished, startedAt: now.addingTimeInterval(-86_400 * 2))
             context.insert(session)
+            if index == 19 || index == 199 || index == 399 {
+                try context.save()
+                XCTAssertEqual(try context.fetch(SessionQueries.menuFinished).count, 3)
+                XCTAssertEqual(try context.fetch(SessionQueries.overviewRecent).count, 5)
+                XCTAssertTrue(try context.fetch(SessionQueries.menuAttention).isEmpty)
+            }
         }
         for index in 0..<8 {
             let session = ClaudeSession(id: "active-\(index)", projectName: "Active", source: .local,
@@ -28,9 +34,13 @@ final class MemoryQueryTests: XCTestCase {
         XCTAssertEqual(try context.fetch(SessionQueries.overviewAttention).count, 6)
         XCTAssertEqual(try context.fetch(SessionQueries.overviewRecent).count, 5)
         XCTAssertEqual(try context.fetch(SessionQueries.finishedToday(now: now)).count, 0)
-        XCTAssertEqual(try context.fetch(SessionQueries.list(filter: .active, search: "")).count, 8)
-        XCTAssertEqual(try context.fetch(SessionQueries.list(filter: .all, search: " old ")).count, 400)
+        XCTAssertEqual(try context.fetch(SessionQueries.list(filter: .active)).count, 8)
+        XCTAssertEqual(try context.fetch(SessionQueries.list(filter: .all)).filter {
+            SessionQueries.matchesSearch($0, search: " old ")
+        }.count, 400)
         XCTAssertEqual(try context.fetchCount(FetchDescriptor<ClaudeSession>()), 408)
+        XCTAssertEqual(try context.fetch(SessionQueries.selected("old-0")).map(\.id), ["old-0"])
+        XCTAssertTrue(try context.fetch(SessionQueries.selected(nil)).isEmpty)
     }
 
     func testEventPagesStayBoundedAsHistoryGrowsAndPreserveAllRecords() throws {
@@ -76,11 +86,15 @@ final class MemoryQueryTests: XCTestCase {
         session.lastMessage = "Choose DATABASE"
         context.insert(session)
         try context.save()
-        XCTAssertEqual(try context.fetch(SessionQueries.list(filter: .attention, search: " database ")).count, 1)
+        XCTAssertEqual(try context.fetch(SessionQueries.list(filter: .attention)).filter {
+            SessionQueries.matchesSearch($0, search: " database ")
+        }.count, 1)
         session.status = .failed
         try context.save()
         XCTAssertTrue(try context.fetch(SessionQueries.menuAttention).isEmpty)
-        XCTAssertEqual(try context.fetch(SessionQueries.list(filter: .finished, search: "backend")).count, 1)
+        XCTAssertEqual(try context.fetch(SessionQueries.list(filter: .finished)).filter {
+            SessionQueries.matchesSearch($0, search: "backend")
+        }.count, 1)
         XCTAssertTrue(try context.fetch(SessionQueries.menuFinished).isEmpty, "The menu only shows successful finishes")
         session.status = .finished
         try context.save()

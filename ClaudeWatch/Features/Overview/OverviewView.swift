@@ -4,19 +4,14 @@ import ClaudeWatchCore
 
 struct OverviewView: View {
     @Environment(AppState.self) private var appState
-    @Query(sort: \ClaudeSession.updatedAt, order: .reverse) private var sessions: [ClaudeSession]
+    @Query(SessionQueries.overviewAttention) private var attention: [ClaudeSession]
+    @Query(SessionQueries.overviewRecent) private var recentlyFinished: [ClaudeSession]
     @Query(OverviewView.recentEventsDescriptor) private var recentEvents: [ClaudeEventRecord]
 
     static var recentEventsDescriptor: FetchDescriptor<ClaudeEventRecord> {
         var descriptor = FetchDescriptor<ClaudeEventRecord>(sortBy: [SortDescriptor(\.receivedAt, order: .reverse)])
         descriptor.fetchLimit = 12
         return descriptor
-    }
-
-    private var attention: [ClaudeSession] { sessions.filter(\.requiresAttention) }
-    private var active: [ClaudeSession] { sessions.filter(\.isActive) }
-    private var finishedToday: [ClaudeSession] {
-        sessions.filter { $0.status == .finished && Calendar.current.isDateInToday($0.finishedAt ?? $0.updatedAt) }
     }
 
     var body: some View {
@@ -36,12 +31,12 @@ struct OverviewView: View {
                 }
 
                 HStack(spacing: 32) {
-                    Metric(value: active.count, title: "Active")
-                    Metric(value: attention.count, title: "Needs Attention", highlight: !attention.isEmpty)
-                    Metric(value: finishedToday.count, title: "Finished Today")
+                    Metric(value: appState.activeCount, title: "Active")
+                    Metric(value: appState.attentionCount, title: "Needs Attention", highlight: !attention.isEmpty)
+                    Metric(value: appState.finishedTodayCount, title: "Finished Today")
                 }
 
-                if sessions.isEmpty {
+                if appState.sessionCount == 0 {
                     ContentUnavailableView {
                         Label("No Sessions Yet", systemImage: "terminal")
                     } description: {
@@ -62,7 +57,6 @@ struct OverviewView: View {
                     }
                 }
 
-                let recentlyFinished = sessions.filter { !$0.isActive }.prefix(5)
                 if !recentlyFinished.isEmpty {
                     Section {
                         ForEach(Array(recentlyFinished)) { session in
