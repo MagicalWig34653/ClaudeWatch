@@ -2,6 +2,26 @@ import SwiftUI
 import SwiftData
 
 @main
+enum ClaudeWatchLauncher {
+    @MainActor
+    static func main() {
+        if AppEnvironment.isRunningTests {
+            ClaudeWatchTestHost.main()
+        } else {
+            ClaudeWatchApp.main()
+        }
+    }
+}
+
+/// App-hosted XCTest needs an executable, but no regular application scenes.
+private struct ClaudeWatchTestHost: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+
+    var body: some Scene {
+        Settings { EmptyView() }
+    }
+}
+
 struct ClaudeWatchApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @State private var appState: AppState

@@ -3,6 +3,12 @@ import AppKit
 /// Keeps ClaudeWatch running in the menu bar after its window is closed and brings the
 /// window back when the app is reopened (Dock icon, Finder, Spotlight).
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationWillFinishLaunching(_ notification: Notification) {
+        if AppEnvironment.isRunningTests {
+            NSApp.setActivationPolicy(.prohibited)
+        }
+    }
+
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         false
     }
