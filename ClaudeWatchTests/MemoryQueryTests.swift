@@ -91,7 +91,8 @@ final class MemoryQueryTests: XCTestCase {
         }.count, 1)
         session.status = .failed
         try context.save()
-        XCTAssertTrue(try context.fetch(SessionQueries.menuAttention).isEmpty)
+        XCTAssertEqual(try context.fetch(SessionQueries.menuAttention).map(\.id), [session.id],
+                       "Failed sessions still require attention, matching the menu behavior on main")
         XCTAssertEqual(try context.fetch(SessionQueries.list(filter: .finished)).filter {
             SessionQueries.matchesSearch($0, search: "backend")
         }.count, 1)
